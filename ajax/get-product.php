@@ -21,7 +21,10 @@ function get_products_callback()
             'id' => $product->ID,
             'name' => $product->post_title,
             'price' => $product_obj->get_price(),
-            'image' => wp_get_attachment_image_src(get_post_thumbnail_id($product->ID), 'thumbnail')[0],
+            'featured_image' => wp_get_attachment_image_src(get_post_thumbnail_id($product->ID), 'thumbnail')[0],
+            'gallery' => array_map(function ($id) {
+                return wp_get_attachment_image_src($id, 'full')[0];
+            }, array_diff((array) $product_obj->get_gallery_image_ids(), array(get_post_thumbnail_id($product->ID)))),
             'quantity' => $product_obj->get_stock_quantity()
         );
     }
