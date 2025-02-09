@@ -7,7 +7,8 @@ function get_products_callback()
 {
     $products = get_posts(array(
         'post_type' => 'product',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'product_type' => 'simple',
     ));
 
     $product_arr = array();
@@ -20,7 +21,7 @@ function get_products_callback()
         $product_arr[] = array(
             'id' => $product->ID,
             'name' => $product->post_title,
-            'price' => $product_obj->get_price(),
+            'price' => $product_obj->get_sale_price() ? $product_obj->get_sale_price() : $product_obj->get_price(),
             'featured_image' => wp_get_attachment_image_src(get_post_thumbnail_id($product->ID), 'thumbnail')[0],
             'gallery' => array_map(function ($id) {
                 return wp_get_attachment_image_src($id, 'full')[0];

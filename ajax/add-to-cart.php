@@ -5,21 +5,26 @@ add_action('wp_ajax_add_to_cart', 'add_to_cart_callback');
 
 function add_to_cart_callback()
 {
-    $product_id = $_POST['product_id'];
-    $quantity = $_POST['quantity'];
+    $products = isset($_POST['data']) ? $_POST['data'] : [];
 
-    $product = wc_get_product($product_id);
-    WC()->cart->add_to_cart($product_id, $quantity);
+    if (empty($products)) {
+        $data = array(
+            'status' => 'error',
+            'message' => 'No products found'
+        );
+        echo json_encode($data);
+        wp_die();
+    }
 
-    $cart_contents = WC()->cart->get_cart_contents();
-    $cart_contents_count = WC()->cart->get_cart_contents_count();
-    $cart_total = WC()->cart->get_cart_total();
+    //add cart cart
+    foreach ($products as $product) {
+        WC()->cart->add_to_cart($product['id'], $product['quantity'], 0, []);
+    }
+
 
     $data = array(
         'status' => 'success',
-        'cart_contents' => $cart_contents,
-        'cart_contents_count' => $cart_contents_count,
-        'cart_total' => $cart_total
+        'message' => 'Product added to cart'
     );
 
     echo json_encode($data);

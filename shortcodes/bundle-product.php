@@ -4,7 +4,9 @@
 function bundle_product_shortcode()
 {
 
-    // get all products
+    // get product id
+    // $product_id = get_the_ID();
+    $product_id = 118;
 
     ob_start();
 ?>
@@ -88,8 +90,6 @@ function bundle_product_shortcode()
                 }
             })
 
-
-
             // show gallery
             $(document).on('click', '.product-card .product-view', function() {
                 let product_id = $(this).data('id');
@@ -147,20 +147,34 @@ function bundle_product_shortcode()
 
             // add to cart function
             $(document).on('click', '.add-to-cart', function() {
+
+                let products = $('.product-card.active').map(function() {
+                    return {
+                        id: $(this).data('id'),
+                        quantity: parseInt($(this).find('.product-quantity').text()),
+                    };
+                }).get();
+
+
                 $.ajax({
                     url: '<?php echo admin_url('admin-ajax.php'); ?>',
                     type: 'post',
                     data: {
                         action: 'add_to_cart',
-                        data: $('.product-card.active').map(function() {
-                            return {
-                                id: $(this).data('id'),
-                                quantity: parseInt($(this).find('.product-quantity').text()),
-                            };
-                        }).get()
+                        data: products,
                     },
                     success: function(response) {
-                        console.log(response);
+                        data = JSON.parse(response);
+                        if (data.status == 'success') {
+                            alert(data.message);
+                            $('.product-card').removeClass('active');
+                            $('.bundle-info').fadeOut();
+                            $('.quantity-controls').hide();
+                            $('.product-view').hide();
+                        } else {
+                            alert(data.message);
+                        }
+                        console.log(data);
                     }
                 })
             })

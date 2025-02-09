@@ -13,3 +13,4 @@ require_once plugin_dir_path(__FILE__) . 'includes/custom-product-type.php';
 require_once plugin_dir_path(__FILE__) . 'includes/enque.php';
 require_once plugin_dir_path(__FILE__) . 'ajax/get-product.php';
 require_once plugin_dir_path(__FILE__) . 'ajax/add-to-cart.php';
+
