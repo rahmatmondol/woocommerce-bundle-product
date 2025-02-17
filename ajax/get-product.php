@@ -8,16 +8,18 @@ function get_products_callback()
     $products = get_posts(array(
         'post_type' => 'product',
         'posts_per_page' => -1,
-        'product_type' => 'simple',
+        'tax_query' => array(
+            array(
+                'taxonomy' => 'product_cat',  
+                'field' => 'slug',
+                'terms' => 'bundle',
+                'operator' => 'IN',
+            ),
+        ),
     ));
-
     $product_arr = array();
     foreach ($products as $product) {
         $product_obj = wc_get_product($product->ID);
-        //if product type is bundle then skip
-        if ($product_obj->get_type() == 'bundle') {
-            continue;
-        }
         $product_arr[] = array(
             'id' => $product->ID,
             'name' => $product->post_title,
@@ -31,15 +33,6 @@ function get_products_callback()
     }
 
     wp_reset_postdata();
-
-    if (empty($product_arr)) {
-        $data = array(
-            'status' => 'error',
-            'message' => 'No products found'
-        );
-        echo json_encode($data);
-        wp_die();
-    }
 
     $data = array(
         'status' => 'success',

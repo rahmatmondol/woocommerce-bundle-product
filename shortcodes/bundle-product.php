@@ -4,10 +4,6 @@
 function bundle_product_shortcode()
 {
 
-    // get product id
-    // $product_id = get_the_ID();
-    $product_id = 118;
-
     ob_start();
 ?>
 
@@ -34,6 +30,19 @@ function bundle_product_shortcode()
 
     <script>
         jQuery(document).ready(function($) {
+
+            // open cart drawer
+            async function openCartDrawer() {
+                let cart_new_item_added = await localStorage.getItem('cart_new_item_added');
+                if (cart_new_item_added) {
+                    //set timeout
+                    setTimeout(() => {
+                        localStorage.removeItem('cart_new_item_added');
+                        $('#elementor-menu-cart__toggle_button').click();
+                    }, 1000);
+                }
+            }
+            openCartDrawer();
 
             // show loading animation
             $('<div id="loading-animation">Loading...</div>').appendTo('#products');
@@ -148,6 +157,8 @@ function bundle_product_shortcode()
             // add to cart function
             $(document).on('click', '.add-to-cart', function() {
 
+
+
                 let products = $('.product-card.active').map(function() {
                     return {
                         id: $(this).data('id'),
@@ -166,13 +177,14 @@ function bundle_product_shortcode()
                     success: function(response) {
                         data = JSON.parse(response);
                         if (data.status == 'success') {
-                            alert(data.message);
                             $('.product-card').removeClass('active');
                             $('.bundle-info').fadeOut();
                             $('.quantity-controls').hide();
                             $('.product-view').hide();
+                            // open elementor cart drawer
+                            window.location.href = '<?php echo wc_get_page_permalink('cart'); ?>';
                         } else {
-                            alert(data.message);
+
                         }
                         console.log(data);
                     }
@@ -247,8 +259,6 @@ function bundle_product_shortcode()
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
             background: #00000096;
             z-index: 99;
         }
